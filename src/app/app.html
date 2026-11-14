@@ -1,0 +1,75 @@
+<main class="container">
+  <h1>Inventario de productos</h1>
+  <p class="intro">Registra y administra los productos de tu inventario.</p>
+
+  <section class="card">
+    <h2>{{ editingId === null ? 'Nuevo producto' : 'Editar producto' }}</h2>
+    <form [formGroup]="productForm" (ngSubmit)="saveProduct()">
+      <div class="form-grid">
+        <label>
+          Nombre del producto
+          <input formControlName="name" placeholder="Ej. Teclado mecánico" />
+          @if (invalid('name')) { <small>Escribe un nombre de mínimo 3 caracteres.</small> }
+        </label>
+        <label>
+          Código
+          <input formControlName="code" placeholder="Ej. TEC-002" />
+          @if (invalid('code')) { <small>El código es obligatorio.</small> }
+        </label>
+        <label>
+          Categoría
+          <select formControlName="category">
+            <option>Tecnología</option>
+            <option>Accesorios</option>
+            <option>Audio</option>
+            <option>Componentes</option>
+            <option>Otros</option>
+          </select>
+        </label>
+        <label>
+          Stock
+          <input type="number" formControlName="stock" min="0" />
+          @if (invalid('stock')) { <small>El stock no puede ser negativo.</small> }
+        </label>
+        <label>
+          Precio (S/)
+          <input type="number" formControlName="price" min="0.01" step="0.01" placeholder="0.00" />
+          @if (invalid('price')) { <small>El precio debe ser mayor que 0.</small> }
+        </label>
+      </div>
+      <div class="actions">
+        <button type="submit">{{ editingId === null ? 'Registrar producto' : 'Guardar cambios' }}</button>
+        @if (editingId !== null) { <button type="button" class="secondary" (click)="cancelEdit()">Cancelar</button> }
+      </div>
+      @if (message) { <p class="message">{{ message }}</p> }
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Productos registrados <span class="count">{{ products.length }}</span></h2>
+    <table>
+      <thead>
+        <tr><th>Producto</th><th>Código</th><th>Categoría</th><th>Stock</th><th>Precio</th><th>Acciones</th></tr>
+      </thead>
+      <tbody>
+        @for (product of products; track product.id) {
+          <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ product.code }}</td>
+            <td>{{ product.category }}</td>
+            <td>{{ product.stock }}</td>
+            <td>S/ {{ product.price.toFixed(2) }}</td>
+            <td class="row-actions">
+              <button class="edit" (click)="editProduct(product)">Editar</button>
+              <button class="delete" (click)="deleteProduct(product.id)">Eliminar</button>
+            </td>
+          </tr>
+        } @empty {
+          <tr><td colspan="6" class="empty">No hay productos registrados.</td></tr>
+        }
+      </tbody>
+    </table>
+  </section>
+
+  <p class="footer">Los registros se guardan en memoria y se reinician al recargar la página.</p>
+</main>
